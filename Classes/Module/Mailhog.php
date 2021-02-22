@@ -48,6 +48,26 @@ class Mailhog extends Module
         $this->assertEquals($numberOfMails, $this->mailHogClient->countAll());
     }
 
+
+    /**
+     * @param int $numberOfMails
+     * @param int $timeoutInSeconds
+     * @throws \Exception
+     */
+    public function waitUntilInboxContainsNumberOfMails(int $numberOfMails, int $timeoutInSeconds = 10): void
+    {
+        for ($i = 0; $i < $timeoutInSeconds; $i++) {
+            $mailCount = $this->mailHogClient->countAll();
+            if ($mailCount === $numberOfMails) {
+                $this->assertEquals($numberOfMails, $mailCount);
+                return;
+            }
+            codecept_debug('Waiting 1 second for MailHog to catch up');
+            sleep(1);
+        }
+        throw new \Exception('Expected number of mails not present in MailHog after 10 seconds');
+    }
+
     public function clearInbox(): void
     {
         $this->mailHogClient->deleteAllMessages();
