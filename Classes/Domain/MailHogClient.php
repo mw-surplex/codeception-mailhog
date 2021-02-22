@@ -1,9 +1,9 @@
 <?php
 
-namespace PunktDe\Codeception\Mailhog\Domain;
+namespace Surplex\Codeception\Mailhog\Domain;
 
 /*
- * This file is part of the PunktDe\Codeception-Mailhog package.
+ * This file is part of the Surplex\Codeception-Mailhog package.
  *
  * This package is open source software. For the full copyright and license
  * information, please view the LICENSE file which was distributed with this
@@ -11,7 +11,7 @@ namespace PunktDe\Codeception\Mailhog\Domain;
  */
 
 use GuzzleHttp\Client;
-use PunktDe\Codeception\Mailhog\Domain\Model\Mail;
+use Surplex\Codeception\Mailhog\Domain\Model\Mail;
 
 class MailHogClient
 {
@@ -32,7 +32,7 @@ class MailHogClient
             'base_uri' => $baseUri,
             'cookies' => true,
             'headers' => [
-                'User-Agent' => 'FancyPunktDeGuzzleTestingAgent'
+                'User-Agent' => 'FancySurplexGuzzleTestingAgent'
             ]
         ]);
     }

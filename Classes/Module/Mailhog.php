@@ -1,9 +1,9 @@
 <?php
 
-namespace PunktDe\Codeception\Mailhog\Module;
+namespace Surplex\Codeception\Mailhog\Module;
 
 /*
- * This file is part of the PunktDe\Codeception-Mailhog package.
+ * This file is part of the Surplex\Codeception-Mailhog package.
  *
  * This package is open source software. For the full copyright and license
  * information, please view the LICENSE file which was distributed with this
@@ -11,8 +11,8 @@ namespace PunktDe\Codeception\Mailhog\Module;
  */
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
-use PunktDe\Codeception\Mailhog\Domain\MailHogClient;
-use PunktDe\Codeception\Mailhog\Domain\Model\Mail;
+use Surplex\Codeception\Mailhog\Domain\MailHogClient;
+use Surplex\Codeception\Mailhog\Domain\Model\Mail;
 
 
 class Mailhog extends Module
@@ -62,25 +62,6 @@ class Mailhog extends Module
         $this->currentMail = $this->mailHogClient->findOneByIndex($mailIndex);
 
         $this->assertInstanceOf(Mail::class, $this->currentMail, 'The mail with number ' . $mailNumber . ' does not exist.');
-    }
-
-
-    /**
-     * @param string $link
-     * @throws \Exception
-     */
-    public function followLinkInTheEmail(string $link): void
-    {
-        $mail = $this->parseMailBody($this->currentMail->getBody());
-        if (preg_match('/(http[^\s|^"]*' . preg_quote($link, '/') . '[^\s|^"]*)/', $mail, $links)) {
-            $webdriver = $this->getModule('WebDriver'); /** @var Module\WebDriver $webdriver */
-            $targetLink = $links[0];
-            $targetLink = urldecode($targetLink);
-            $targetLink = html_entity_decode($targetLink);
-            $webdriver->amOnUrl($targetLink);
-            return;
-        }
-        throw new \Exception(sprintf('Did not find the link "%s" in the mail', $link));
     }
 
     /**
