@@ -4,7 +4,8 @@
     "license": "GPL-3.0-or-later",
     "require": {
         "codeception/codeception": "^4.0",
-        "neos/utility-arrays": "*"
+        "neos/utility-arrays": "*",
+        "guzzlehttp/guzzle": "^7.2"
     },
     "autoload": {
         "psr-4": {
