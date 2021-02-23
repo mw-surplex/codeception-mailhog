@@ -11,6 +11,8 @@ namespace Surplex\Codeception\Mailhog\Module;
  */
 use Codeception\Lib\ModuleContainer;
 use Codeception\Module;
+use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Surplex\Codeception\Mailhog\Domain\MailHogClient;
 use Surplex\Codeception\Mailhog\Domain\Model\Mail;
 
@@ -18,15 +20,9 @@ use Surplex\Codeception\Mailhog\Domain\Model\Mail;
 class Mailhog extends Module
 {
 
-    /**
-     * @var MailHogClient
-     */
-    protected $mailHogClient;
+    protected MailHogClient $mailHogClient;
 
-    /**
-     * @var Mail
-     */
-    protected $currentMail = null;
+    protected ?Mail $currentMail = null;
 
     /**
      * Mailhog constructor.
@@ -41,7 +37,7 @@ class Mailhog extends Module
 
     /**
      * @param int $numberOfMails
-     * @throws \Exception
+     * @throws Exception
      */
     public function inboxContainsNumberOfMails(int $numberOfMails): void
     {
@@ -52,7 +48,7 @@ class Mailhog extends Module
     /**
      * @param int $numberOfMails
      * @param int $timeoutInSeconds
-     * @throws \Exception
+     * @throws Exception
      */
     public function waitUntilInboxContainsNumberOfMails(int $numberOfMails, int $timeoutInSeconds = 10): void
     {
@@ -65,9 +61,12 @@ class Mailhog extends Module
             codecept_debug('Waiting 1 second for MailHog to catch up');
             sleep(1);
         }
-        throw new \Exception('Expected number of mails not present in MailHog after 10 seconds');
+        throw new Exception('Expected number of mails not present in MailHog after 10 seconds');
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function clearInbox(): void
     {
         $this->mailHogClient->deleteAllMessages();
@@ -75,6 +74,7 @@ class Mailhog extends Module
 
     /**
      * @param int $mailNumber
+     * @throws GuzzleException
      */
     public function openMailByNumber(int $mailNumber): void
     {
@@ -86,7 +86,7 @@ class Mailhog extends Module
 
     /**
      * @param string $text
-     * @throws \Exception
+     * @throws Exception
      */
     public function seeTextInMail(string $text): void
     {
@@ -94,12 +94,12 @@ class Mailhog extends Module
         if (stristr($mail, $text)) {
             return;
         }
-        throw new \Exception(sprintf('Did not find the text "%s" in the mail', $text));
+        throw new Exception(sprintf('Did not find the text "%s" in the mail', $text));
     }
 
     /**
      * @param string $address
-     * @throws \Exception
+     * @throws Exception
      */
     public function checkRecipientAddress(string $address): void
     {
@@ -109,11 +109,11 @@ class Mailhog extends Module
                 return;
             }
         }
-        throw new \Exception(sprintf('Did not find the recipient "%s" in the mail', $address));
+        throw new Exception(sprintf('Did not find the recipient "%s" in the mail', $address));
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function checkIfSpam(): void
     {
@@ -125,7 +125,7 @@ class Mailhog extends Module
             }
         }
 
-        throw new \Exception(sprintf('Could not find [SPAM] at the beginning of subject "%s"', $subject));
+        throw new Exception(sprintf('Could not find [SPAM] at the beginning of subject "%s"', $subject));
     }
 
     /**

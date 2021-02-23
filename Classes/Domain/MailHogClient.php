@@ -10,17 +10,15 @@ namespace Surplex\Codeception\Mailhog\Domain;
  * source code.
  */
 
+use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Surplex\Codeception\Mailhog\Domain\Model\Mail;
 
 class MailHogClient
 {
 
-    /**
-     * @var Client
-     */
-    protected $client;
-
+    protected Client $client;
 
     /**
      * MailHogClient constructor.
@@ -37,7 +35,9 @@ class MailHogClient
         ]);
     }
 
-
+    /**
+     * @throws GuzzleException
+     */
     public function deleteAllMessages(): void
     {
         $this->client->delete('/api/v1/messages');
@@ -45,7 +45,7 @@ class MailHogClient
 
     /**
      * @return int
-     * @throws \Exception
+     * @throws Exception
      */
     public function countAll(): int
     {
@@ -56,6 +56,7 @@ class MailHogClient
     /**
      * @param $index
      * @return Mail
+     * @throws GuzzleException
      */
     public function findOneByIndex(int $index): Mail
     {
@@ -71,16 +72,16 @@ class MailHogClient
     /**
      * @param $apiCall
      * @return array
-     * @throws \Exception
+     * @throws Exception|GuzzleException
      */
-    protected function getDataFromMailHog($apiCall)
+    protected function getDataFromMailHog($apiCall): array
     {
         $result = $this->client->get($apiCall)->getBody();
 
         $data = json_decode($result, true);
 
         if ($data === false) {
-            throw new \Exception('The mailhog result could not be parsed to json', 1467038556);
+            throw new Exception('The mailhog result could not be parsed to json', 1467038556);
         }
 
         return $data;
