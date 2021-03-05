@@ -97,6 +97,11 @@ class Mailhog extends Module
         throw new Exception(sprintf('Did not find the text "%s" in the mail', $text));
     }
 
+    public function getCurrentMail(): Mail
+    {
+        return $this->currentMail;
+    }
+
     /**
      * @param string $address
      * @throws Exception

@@ -72,4 +72,24 @@ class Mail
         return $this->recipients;
     }
 
+    public function getAttachments()
+    {
+        $mimeParts = Arrays::getValueByPath($this->maiLData, 'MIME.Parts');
+        $mimeParts = array_values(array_filter(
+            $mimeParts,
+            function ($part) {
+                return array_key_exists('Content-Disposition', $part['Headers'])
+                    && strpos($part['Headers']['Content-Disposition'][0], 'attachment;') !== false;
+            }
+        ));
+        return array_map(function ($part) {
+            preg_match('/filename=([^;$]+)/m', $part['Headers']['Content-Disposition'][0], $matches);
+            $mimeType = null;
+            if (array_key_exists('Content-Type', $part['Headers'])) {
+                $mimeType = explode(';', $part['Headers']['Content-Type'][0])[0];
+            }
+            return ['filename' => $matches[1], 'size' => $part['Size'], 'mimetype' => $mimeType];
+        }, $mimeParts);
+    }
+
 }
